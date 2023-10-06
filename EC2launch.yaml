@@ -1,0 +1,56 @@
+---
+- name: Create EC2 Instance
+  hosts: localhost
+  gather_facts: False
+  vars:
+    aws_access_key: "AKIASNNAFHC6UDAEDI5X"
+    aws_secret_key: "2HlIXPDqEz0KTjsVTjUk6HuCbGtV/OCJWb4Zm2Ji"
+    region: "us-east-1"
+    instance_type: "t2.micro"
+    ami_id: "ami-001ded91c8b71dae2" # Replace with your desired AMI ID
+    key_name: "Meghana_proton.pem"   # Replace with your key pair name
+    security_group: "eks-cluster-sg-meghana-eks-1840975483" # Replace with your security group name
+    vpc_subnet_id: "subnet-04d73f00888260f6c"   # Replace with your subnet ID
+    instance_name: "TestInstance" # Replace with your desired instance name
+
+  tasks:
+    - name: Launch EC2 Instance
+      ec2:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami_id }}"
+        group: "{{ security_group }}"
+        subnet_id: "{{ subnet_id }}"
+        wait: yes
+        instance_tags:
+          Name: "{{ instance_name }}"
+      register: ec2_instance
+
+    - name: Add the new instance to the host group
+      add_host:
+        hostname: "{{ item.public_ip }}"
+        groupname: launched_instances
+      with_items: "{{ ec2_instance.instances }}"
+
+    - name: Wait for SSH to become available
+      wait_for:
+        host: "{{ item.public_ip }}"
+        port: 22
+        state: started
+      with_items: "{{ ec2_instance.instances }}"
+
+    - name: Print instance information
+      debug:
+        var: ec2_instance.instances
+
+- name: Configure EC2 Instances
+  hosts: launched_instances
+  remote_user: ec2-user  # Replace with your desired SSH user
+  become: yes
+  tasks:
+    # You can add tasks here to configure your EC2 instance after creation.
+    - name: Example Task
+      shell: echo "Hello, EC2 Instance!" >> /home/ec2-user/welcome.txt
