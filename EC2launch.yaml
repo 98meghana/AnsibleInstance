@@ -15,7 +15,7 @@
 
   tasks:
     - name: TestInstance
-      ec2:
+       ec2:
         aws_access_key: "{{ aws_access_key }}"
         aws_secret_key: "{{ aws_secret_key }}"
         region: "{{ region }}"
