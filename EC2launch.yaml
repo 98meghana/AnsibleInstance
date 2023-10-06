@@ -10,7 +10,7 @@
     ami_id: "ami-001ded91c8b71dae2" # Replace with your desired AMI ID
     key_name: "Meghana_proton.pem"   # Replace with your key pair name
     security_group: "eks-cluster-sg-meghana-eks-1840975483" # Replace with your security group name
-    vpc_subnet_id: "subnet-04d73f00888260f6c"   # Replace with your subnet ID
+    vpc_subnet_id: "subnet-0f6269d3820fee8a4"   # Replace with your subnet ID
     instance_name: "TestInstance" # Replace with your desired instance name
 
   tasks:
